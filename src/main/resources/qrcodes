@@ -1,0 +1,15 @@
+// In your QRCodeGenerator class
+public static void generateQRCode(String data, String fileName) throws Exception {
+    // Make sure the 'qrcodes' folder exists within 'src/main/resources/'
+    Path path = FileSystems.getDefault().getPath("src/main/resources/qrcodes/" + fileName); // Use a valid file path
+
+    // Set encoding hints
+    Hashtable<EncodeHintType, String> hints = new Hashtable<>();
+    hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+    // Create the QR code
+    BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 200, 200, hints);
+
+    // Save the QR code as a PNG image
+    MatrixToImageWriter.writeToPath(matrix, "PNG", path);
+}

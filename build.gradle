@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.jobfinder.shopping'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'mysql:mysql-connector-java:8.0.33' // MySQL JDBC
+    implementation 'org.projectlombok:lombok:1.18.28'   // Lombok for reducing boilerplate code
+    implementation 'com.google.zxing:core:3.4.1'        // Core ZXing library
+    implementation 'com.google.zxing:javase:3.4.1'      // ZXing J2SE for image handling
+    implementation 'org.postgresql:postgresql:42.7.2'  // PostgreSQL JDBC driver
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.1.4'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.1.4'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'  // JUnit 5 for testing
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+}
+
+application {
+    mainClass = 'app.Main'  // Set the main class for the application
+}
+
+test {
+    useJUnitPlatform()  // Use JUnit Platform for testing
+}

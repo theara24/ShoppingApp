@@ -8,7 +8,7 @@ public class AppConfig {
     private static Properties properties = new Properties();
 
     static {
-        try (FileInputStream fis = new FileInputStream("src/main/resources/application.properties")) {
+        try (FileInputStream fis = new FileInputStream("src/main/java/resources/application.properties")) {
             properties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();

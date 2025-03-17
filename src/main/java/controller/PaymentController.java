@@ -15,7 +15,8 @@ public class PaymentController {
     // Process the payment after order checkout
     public void processPayment(int orderId, double totalAmount) {
         System.out.println("Total amount to pay: $" + totalAmount);
-        String decision = getValidUserInput();
+        System.out.print("Do you want to proceed with the payment (yes/no)? ");
+        String decision = scanner.nextLine();
 
         if ("yes".equalsIgnoreCase(decision)) {
             boolean paymentSuccess = paymentService.processPayment(orderId, totalAmount);
@@ -27,20 +28,5 @@ public class PaymentController {
         } else {
             System.out.println("Payment canceled.");
         }
-    }
-
-    // Get valid input from the user (yes/no)
-    private String getValidUserInput() {
-        String decision;
-        while (true) {
-            System.out.print("Do you want to proceed with the payment (yes/no)? ");
-            decision = scanner.nextLine();
-            if ("yes".equalsIgnoreCase(decision) || "no".equalsIgnoreCase(decision)) {
-                break;
-            } else {
-                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-            }
-        }
-        return decision;
     }
 }

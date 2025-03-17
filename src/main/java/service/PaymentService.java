@@ -3,7 +3,6 @@ package service;
 import dao.PaymentDAO;
 import model.Payment;
 import java.sql.Connection;
-import java.util.List;
 
 public class PaymentService {
     private PaymentDAO paymentDAO;
@@ -27,15 +26,5 @@ public class PaymentService {
         } else {
             return false;
         }
-    }
-
-    // Make a payment
-    public boolean makePayment(Payment payment) {
-        return paymentDAO.createPayment(payment);
-    }
-
-    // Get all payments
-    public List<Payment> getAllPayments() {
-        return paymentDAO.getAllPayments();
     }
 }

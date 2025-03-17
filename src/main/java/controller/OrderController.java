@@ -20,7 +20,7 @@ public class OrderController {
         String decision = scanner.nextLine();
 
         if ("yes".equalsIgnoreCase(decision)) {
-            boolean success = orderService.createOrder(userId);
+            boolean success = orderService.createOrder(userId, totalAmount);
             if (success) {
                 System.out.println("Order placed successfully!");
             } else {

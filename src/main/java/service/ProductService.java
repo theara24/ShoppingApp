@@ -1,7 +1,7 @@
 package service;
 
-import dao.ProductDAO;
 import model.Product;
+import dao.ProductDAO;
 import java.sql.Connection;
 import java.util.List;
 
@@ -12,25 +12,24 @@ public class ProductService {
         this.productDAO = new ProductDAO(connection);
     }
 
-    // Add new product
-    public boolean addProduct(String name, String description, double price, int stockQuantity) {
-        Product product = new Product(name, description, price, stockQuantity);
-        return productDAO.addProduct(product);
+    public void addProduct(Product product) {
+        productDAO.addProduct(product);
     }
 
-    // Update product details
-    public boolean updateProduct(int id, String name, String description, double price, int stockQuantity) {
-        Product product = new Product(id, name, description, price, stockQuantity);
-        return productDAO.updateProduct(product);
+    public void updateProduct(Product product) {
+        productDAO.updateProduct(product);
     }
 
-    // Delete a product
-    public boolean deleteProduct(int productId) {
-        return productDAO.deleteProduct(productId);
+    public void deleteProduct(int id) {
+        productDAO.deleteProduct(id);
     }
 
-    // List all products
     public List<Product> getAllProducts() {
         return productDAO.getAllProducts();
+    }
+
+    public List<Product> getProducts(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return productDAO.getProducts(offset, pageSize);
     }
 }

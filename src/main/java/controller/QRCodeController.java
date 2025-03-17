@@ -1,7 +1,6 @@
 package controller;
 
 import service.QRCodeService;
-import model.QRCode;
 import java.util.Scanner;
 
 public class QRCodeController {
@@ -13,18 +12,15 @@ public class QRCodeController {
         this.scanner = new Scanner(System.in);
     }
 
-    // Handle QR code generation for a payment
-    public void generateQRCodeForPayment(int orderId) {
-        System.out.println("Generating QR Code for Order ID: " + orderId);
-        // Simulate some payment info, this would typically include transaction details
-        String paymentInfo = "Payment for Order #" + orderId;
-
-        QRCode qrCode = qrCodeService.generatePaymentQRCode(orderId, paymentInfo);
-        if (qrCode != null) {
-            System.out.println("QR Code generated successfully!");
-            System.out.println("QR Code file saved at: " + qrCode.getFileName());
+    // Method to generate QR code
+    public void generateQRCode(int orderId) {
+        System.out.print("Enter the data for the QR code: ");
+        String data = scanner.nextLine();
+        boolean success = qrCodeService.generateQRCode(orderId, data);
+        if (success) {
+            System.out.println("QR code generated successfully!");
         } else {
-            System.out.println("Failed to generate QR Code.");
+            System.out.println("Failed to generate QR code.");
         }
     }
 }

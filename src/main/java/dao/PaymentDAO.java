@@ -1,29 +1,40 @@
-// File: src/main/java/dao/PaymentDAO.java
 package dao;
 
 import model.Payment;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import config.DatabaseConfig;
+
+import java.sql.*;
 
 public class PaymentDAO {
-    private final Connection connection;
 
-    public PaymentDAO(Connection connection) {
-        this.connection = connection;
+    public void save(Payment payment) throws SQLException {
+        String sql = "INSERT INTO payments (order_id, amount, payment_method, status) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, payment.getOrderId());
+            stmt.setDouble(2, payment.getAmount());
+            stmt.setString(3, payment.getPaymentMethod());
+            stmt.setString(4, payment.getStatus());
+            stmt.executeUpdate();
+        }
     }
 
-    public boolean createPayment(Payment payment) {
-        String sql = "INSERT INTO payments (order_id, amount, status) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, payment.getOrderId());
-            statement.setDouble(2, payment.getAmount());
-            statement.setString(3, payment.getStatus());
-            int rowsInserted = statement.executeUpdate();
-            return rowsInserted > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+    public Payment findById(Long id) throws SQLException {
+        String sql = "SELECT * FROM payments WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Payment(
+                        rs.getLong("id"),
+                        rs.getLong("order_id"),
+                        rs.getDouble("amount"),
+                        rs.getString("payment_method"),
+                        rs.getString("status")
+                );
+            }
+            return null;
         }
     }
 }

@@ -1,25 +1,45 @@
 package service;
 
 import dao.OrderDAO;
+import dao.ProductDAO;
 import model.Order;
-import java.sql.Connection;
+import model.Product;
+
+import java.sql.SQLException;
 
 public class OrderService {
     private OrderDAO orderDAO;
+    private ProductDAO productDAO;
 
-    public OrderService(Connection connection) {
-        this.orderDAO = new OrderDAO(connection);
+    public OrderService() {
+        this.orderDAO = new OrderDAO();
+        this.productDAO = new ProductDAO();
     }
 
-    // Calculate the total amount for the user's cart
-    public double calculateTotalAmount(int userId) {
-        // Implement the logic to calculate the total amount
-        return orderDAO.calculateTotalAmount(userId);
+    public void placeOrder(Long userId, Long productId, int quantity) throws SQLException {
+        Product product = productDAO.findById(productId);
+        if (product == null || product.getStock() < quantity) {
+            throw new SQLException("Product not available or insufficient stock.");
+        }
+
+        double totalPrice = product.getPrice() * quantity;
+        Order order = new Order(null, userId, productId, quantity, totalPrice, "PENDING");
+        orderDAO.save(order);
+
+        // Update stock in the database
+        int newStock = product.getStock() - quantity;
+        productDAO.updateStock(productId, newStock);
     }
 
-    // Create an order for the user
-    public boolean createOrder(int userId, double totalAmount) {
-        // Implement the logic to create an order
-        return orderDAO.createOrder(userId, totalAmount);
+    public Order getOrderById(Long id) throws SQLException {
+        return orderDAO.findById(id);
+    }
+
+    public void updateOrderStatus(Long orderId, String newStatus) throws SQLException {
+        Order order = orderDAO.findById(orderId);
+        if (order == null) {
+            throw new SQLException("Order not found.");
+        }
+        orderDAO.updateStatus(orderId, newStatus);
     }
 }

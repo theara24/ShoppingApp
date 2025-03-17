@@ -1,26 +1,34 @@
 package controller;
 
+import model.QRCode;
 import service.QRCodeService;
-import java.util.Scanner;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import com.google.zxing.WriterException;
 
 public class QRCodeController {
     private QRCodeService qrCodeService;
-    private Scanner scanner;
 
-    public QRCodeController(QRCodeService qrCodeService) {
-        this.qrCodeService = qrCodeService;
-        this.scanner = new Scanner(System.in);
+    public QRCodeController() {
+        this.qrCodeService = new QRCodeService();
     }
 
-    // Method to generate QR code
-    public void generateQRCode(int orderId) {
-        System.out.print("Enter the data for the QR code: ");
-        String data = scanner.nextLine();
-        boolean success = qrCodeService.generateQRCode(orderId, data);
-        if (success) {
-            System.out.println("QR code generated successfully!");
-        } else {
-            System.out.println("Failed to generate QR code.");
+    public String generateQRCode(Long paymentId) {
+        try {
+            String filePath = qrCodeService.generateQRCodeForPayment(paymentId);
+            return "QR Code generated successfully at: " + filePath;
+        } catch (SQLException | WriterException | IOException e) {
+            return "Error generating QR code: " + e.getMessage();
+        }
+    }
+
+    public QRCode getQRCode(Long id) {
+        try {
+            return qrCodeService.getQRCodeById(id);
+        } catch (SQLException e) {
+            System.err.println("Error fetching QR code: " + e.getMessage());
+            return null;
         }
     }
 }

@@ -1,37 +1,38 @@
-// File: src/main/java/dao/AdminDAO.java
 package dao;
 
 import model.Admin;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import config.DatabaseConfig;
+
+import java.sql.*;
 
 public class AdminDAO {
-    private final Connection connection;
 
-    public AdminDAO(Connection connection) {
-        this.connection = connection;
+    public void save(Admin admin) throws SQLException {
+        String sql = "INSERT INTO admins (username, email, password) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, admin.getUsername());
+            stmt.setString(2, admin.getEmail());
+            stmt.setString(3, admin.getPassword());
+            stmt.executeUpdate();
+        }
     }
 
-    public Admin findAdminByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM admins WHERE email = ? AND password = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, email);
-            statement.setString(2, password);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    Admin admin = new Admin();
-                    admin.setId(resultSet.getInt("id"));
-                    admin.setEmail(resultSet.getString("email"));
-                    admin.setPassword(resultSet.getString("password"));
-                    // Set other fields as needed
-                    return admin;
-                }
+    public Admin findById(Long id) throws SQLException {
+        String sql = "SELECT * FROM admins WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Admin(
+                        rs.getLong("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password")
+                );
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }

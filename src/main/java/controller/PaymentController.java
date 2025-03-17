@@ -1,32 +1,32 @@
 package controller;
 
+import model.Payment;
 import service.PaymentService;
-import java.util.Scanner;
+
+import java.sql.SQLException;
 
 public class PaymentController {
     private PaymentService paymentService;
-    private Scanner scanner;
 
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-        this.scanner = new Scanner(System.in);
+    public PaymentController() {
+        this.paymentService = new PaymentService();
     }
 
-    // Process the payment after order checkout
-    public void processPayment(int orderId, double totalAmount) {
-        System.out.println("Total amount to pay: $" + totalAmount);
-        System.out.print("Do you want to proceed with the payment (yes/no)? ");
-        String decision = scanner.nextLine();
+    public String processPayment(Long orderId, String paymentMethod) {
+        try {
+            paymentService.processPayment(orderId, paymentMethod);
+            return "Payment processed successfully!";
+        } catch (SQLException e) {
+            return "Error processing payment: " + e.getMessage();
+        }
+    }
 
-        if ("yes".equalsIgnoreCase(decision)) {
-            boolean paymentSuccess = paymentService.processPayment(orderId, totalAmount);
-            if (paymentSuccess) {
-                System.out.println("Payment processed successfully!");
-            } else {
-                System.out.println("Payment failed. Please try again.");
-            }
-        } else {
-            System.out.println("Payment canceled.");
+    public Payment getPayment(Long id) {
+        try {
+            return paymentService.getPaymentById(id);
+        } catch (SQLException e) {
+            System.err.println("Error fetching payment: " + e.getMessage());
+            return null;
         }
     }
 }

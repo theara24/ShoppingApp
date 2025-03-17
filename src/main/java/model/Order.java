@@ -1,46 +1,34 @@
-// src/main/java/model/Order.java
 package model;
 
 public class Order {
-    private int id;
-    private int userId;
-    private double totalAmount;
+    private Long id;
+    private Long userId; // References the User
+    private Long productId; // References the Product
+    private int quantity;
+    private double totalPrice;
+    private String status; // e.g., "PENDING", "SHIPPED", "DELIVERED"
 
-    // Constructor
-    public Order(int id, int userId, double totalAmount) {
+    public Order() {}
+
+    public Order(Long id, Long userId, Long productId, int quantity, double totalPrice, String status) {
         this.id = id;
         this.userId = userId;
-        this.totalAmount = totalAmount;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+        this.status = status;
     }
 
-    // Constructor without id
-    public Order(int userId, double totalAmount) {
-        this.userId = userId;
-        this.totalAmount = totalAmount;
-    }
-
-    // Getters and setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getProductId() { return productId; }
+    public void setProductId(Long productId) { this.productId = productId; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public double getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

@@ -1,94 +1,61 @@
 package controller;
 
-import service.ProductService;
+import model.Admin;
+import model.Order;
 import model.Product;
-import java.util.Scanner;
+import service.AdminService;
+
+import java.sql.SQLException;
 
 public class AdminController {
-    private ProductService productService;
+    private AdminService adminService;
 
-    public AdminController(ProductService productService) {
-        this.productService = productService;
+    public AdminController() {
+        this.adminService = new AdminService();
     }
 
-    public void handleAdminActions(Scanner scanner) {
-        while (true) {
-            System.out.println("Admin Menu:");
-            System.out.println("1. Add Product");
-            System.out.println("2. Update Product");
-            System.out.println("3. Delete Product");
-            System.out.println("4. View Products");
-            System.out.println("5. Logout");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume the newline character
-
-            switch (choice) {
-                case 1:
-                    addProduct(scanner);
-                    break;
-                case 2:
-                    updateProduct(scanner);
-                    break;
-                case 3:
-                    deleteProduct(scanner);
-                    break;
-                case 4:
-                    viewProducts();
-                    break;
-                case 5:
-                    System.out.println("Logging out...");
-                    return;  // Exit the admin menu
-                default:
-                    System.out.println("Invalid option. Try again.");
-                    break;
-            }
+    public String registerAdmin(Admin admin) {
+        try {
+            adminService.registerAdmin(admin);
+            return "Admin registered successfully!";
+        } catch (SQLException e) {
+            return "Error registering admin: " + e.getMessage();
         }
     }
 
-    private void addProduct(Scanner scanner) {
-        System.out.print("Enter product name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter product price: ");
-        double price = scanner.nextDouble();
-        scanner.nextLine();  // Consume the newline character
-        System.out.print("Enter product description: ");
-        String description = scanner.nextLine();
-
-        Product product = new Product(name, price, description);
-        productService.addProduct(product);
-        System.out.println("Product added successfully.");
+    public Admin getAdmin(Long id) {
+        try {
+            return adminService.getAdminById(id);
+        } catch (SQLException e) {
+            System.err.println("Error fetching admin: " + e.getMessage());
+            return null;
+        }
     }
 
-    private void updateProduct(Scanner scanner) {
-        System.out.print("Enter product ID to update: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();  // Consume the newline character
-        System.out.print("Enter new product name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter new product price: ");
-        double price = scanner.nextDouble();
-        scanner.nextLine();  // Consume the newline character
-        System.out.print("Enter new product description: ");
-        String description = scanner.nextLine();
-
-        Product product = new Product(id, name, price, description);
-        productService.updateProduct(product);
-        System.out.println("Product updated successfully.");
+    public String addProduct(Product product) {
+        try {
+            adminService.addProduct(product);
+            return "Product added successfully by admin!";
+        } catch (SQLException e) {
+            return "Error adding product: " + e.getMessage();
+        }
     }
 
-    private void deleteProduct(Scanner scanner) {
-        System.out.print("Enter product ID to delete: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();  // Consume the newline character
-
-        productService.deleteProduct(id);
-        System.out.println("Product deleted successfully.");
+    public Order getOrder(Long orderId) {
+        try {
+            return adminService.getOrderById(orderId);
+        } catch (SQLException e) {
+            System.err.println("Error fetching order: " + e.getMessage());
+            return null;
+        }
     }
 
-    private void viewProducts() {
-        for (Product product : productService.getAllProducts()) {
-            System.out.println(product);
+    public String updateOrderStatus(Long orderId, String newStatus) {
+        try {
+            adminService.updateOrderStatus(orderId, newStatus);
+            return "Order status updated to " + newStatus + " by admin successfully!";
+        } catch (SQLException e) {
+            return "Error updating order status: " + e.getMessage();
         }
     }
 }

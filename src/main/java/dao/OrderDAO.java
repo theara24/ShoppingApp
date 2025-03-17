@@ -1,43 +1,52 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import model.Order;
+import config.DatabaseConfig;
+
+import java.sql.*;
 
 public class OrderDAO {
-    private final Connection connection;
 
-    public OrderDAO(Connection connection) {
-        this.connection = connection;
+    public void save(Order order) throws SQLException {
+        String sql = "INSERT INTO orders (user_id, product_id, quantity, total_price, status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, order.getUserId());
+            stmt.setLong(2, order.getProductId());
+            stmt.setInt(3, order.getQuantity());
+            stmt.setDouble(4, order.getTotalPrice());
+            stmt.setString(5, order.getStatus());
+            stmt.executeUpdate();
+        }
     }
 
-    public double calculateTotalAmount(int userId) {
-        // Implement the logic to calculate the total amount from the database
-        String sql = "SELECT SUM(price) FROM cart WHERE user_id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, userId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getDouble(1);
-                }
+    public Order findById(Long id) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Order(
+                        rs.getLong("id"),
+                        rs.getLong("user_id"),
+                        rs.getLong("product_id"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("total_price"),
+                        rs.getString("status")
+                );
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return null;
         }
-        return 0.0;
     }
 
-    public boolean createOrder(int userId, double totalAmount) {
-        // Implement the logic to create an order in the database
-        String sql = "INSERT INTO orders (user_id, total_amount) VALUES (?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, userId);
-            statement.setDouble(2, totalAmount);
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void updateStatus(Long orderId, String newStatus) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newStatus);
+            stmt.setLong(2, orderId);
+            stmt.executeUpdate();
         }
-        return false;
     }
 }

@@ -1,38 +1,38 @@
 package dao;
 
 import model.User;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import config.DatabaseConfig;
+
+import java.sql.*;
 
 public class UserDAO {
-    private Connection connection;
 
-    public UserDAO(Connection connection) {
-        this.connection = connection;
+    public void save(User user) throws SQLException {
+        String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.executeUpdate();
+        }
     }
 
-    public User getUserByUsername(String username) throws SQLException {
-        String query = "SELECT * FROM Users WHERE username = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
+    public User findById(Long id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
                 return new User(
-                        resultSet.getInt("user_id"),
-                        resultSet.getString("username"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("full_name"),
-                        resultSet.getString("address"),
-                        resultSet.getString("phone_number"),
-                        resultSet.getString("role"),
-                        resultSet.getTimestamp("created_at"),
-                        resultSet.getTimestamp("updated_at")
+                        rs.getLong("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password")
                 );
             }
+            return null;
         }
-        return null;
     }
 }

@@ -1,33 +1,41 @@
 package controller;
 
+import model.Order;
 import service.OrderService;
-import java.util.Scanner;
+
+import java.sql.SQLException;
 
 public class OrderController {
     private OrderService orderService;
-    private Scanner scanner;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-        this.scanner = new Scanner(System.in);
+    public OrderController() {
+        this.orderService = new OrderService();
     }
 
-    // Checkout the cart and place an order
-    public void checkout(int userId) {
-        double totalAmount = orderService.calculateTotalAmount(userId);
-        System.out.println("Total amount for your cart: $" + totalAmount);
-        System.out.print("Do you want to proceed with the order (yes/no)? ");
-        String decision = scanner.nextLine();
+    public String placeOrder(Long userId, Long productId, int quantity) {
+        try {
+            orderService.placeOrder(userId, productId, quantity);
+            return "Order placed successfully!";
+        } catch (SQLException e) {
+            return "Error placing order: " + e.getMessage();
+        }
+    }
 
-        if ("yes".equalsIgnoreCase(decision)) {
-            boolean success = orderService.createOrder(userId, totalAmount);
-            if (success) {
-                System.out.println("Order placed successfully!");
-            } else {
-                System.out.println("Failed to place order.");
-            }
-        } else {
-            System.out.println("Order canceled.");
+    public Order getOrder(Long id) {
+        try {
+            return orderService.getOrderById(id);
+        } catch (SQLException e) {
+            System.err.println("Error fetching order: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String updateOrderStatus(Long orderId, String newStatus) {
+        try {
+            orderService.updateOrderStatus(orderId, newStatus);
+            return "Order status updated to " + newStatus + " successfully!";
+        } catch (SQLException e) {
+            return "Error updating order status: " + e.getMessage();
         }
     }
 }

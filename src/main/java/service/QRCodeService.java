@@ -1,28 +1,47 @@
 package service;
 
-import java.io.File;
+import dao.PaymentDAO;
+import dao.QRCodeDAO;
+import model.Payment;
+import model.QRCode;
+import utils.QRCodeGenerator;
+
 import java.io.IOException;
-import com.google.zxing.BarcodeFormat;
+import java.sql.SQLException;
 import com.google.zxing.WriterException;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
 
 public class QRCodeService {
+    private QRCodeDAO qrCodeDAO;
+    private PaymentDAO paymentDAO;
 
-    public boolean generateQRCode(int orderId, String data) {
-        String filePath = "qrcodes/order_" + orderId + ".png";
-        int width = 300;
-        int height = 300;
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        try {
-            BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height);
-            File qrFile = new File(filePath);
-            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", qrFile.toPath());
-            return true;
-        } catch (WriterException | IOException e) {
-            e.printStackTrace();
-            return false;
+    public QRCodeService() {
+        this.qrCodeDAO = new QRCodeDAO();
+        this.paymentDAO = new PaymentDAO();
+    }
+
+    public String generateQRCodeForPayment(Long paymentId) throws SQLException, WriterException, IOException {
+        Payment payment = paymentDAO.findById(paymentId);
+        if (payment == null) {
+            throw new SQLException("Payment not found.");
         }
+
+        // Create QR code content (e.g., payment details)
+        String qrContent = "Payment ID: " + payment.getId() +
+                ", Amount: $" + payment.getAmount() +
+                ", Method: " + payment.getPaymentMethod();
+        String filePath = "src/main/resources/qrcodes/payment_" + paymentId + ".png";
+
+        // Generate QR code
+        QRCodeGenerator.generateQRCode(qrContent, filePath);
+
+        // Save QR code metadata to database
+        QRCode qrCode = new QRCode(null, paymentId, filePath);
+        qrCodeDAO.save(qrCode);
+
+        return filePath;
+    }
+
+    public QRCode getQRCodeById(Long id) throws SQLException {
+        return qrCodeDAO.findById(id);
     }
 }

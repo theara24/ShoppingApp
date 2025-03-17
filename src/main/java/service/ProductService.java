@@ -1,7 +1,7 @@
 package service;
 
-import model.Product;
 import dao.ProductDAO;
+import model.Product;
 import java.sql.Connection;
 import java.util.List;
 
@@ -12,16 +12,16 @@ public class ProductService {
         this.productDAO = new ProductDAO(connection);
     }
 
-    public void addProduct(Product product) {
-        productDAO.addProduct(product);
+    public boolean addProduct(Product product) {
+        return productDAO.addProduct(product);
     }
 
-    public void updateProduct(Product product) {
-        productDAO.updateProduct(product);
+    public boolean updateProduct(Product product) {
+        return productDAO.updateProduct(product);
     }
 
-    public void deleteProduct(int id) {
-        productDAO.deleteProduct(id);
+    public boolean deleteProduct(int id) {
+        return productDAO.deleteProduct(id);
     }
 
     public List<Product> getAllProducts() {
@@ -29,7 +29,6 @@ public class ProductService {
     }
 
     public List<Product> getProducts(int page, int pageSize) {
-        int offset = (page - 1) * pageSize;
-        return productDAO.getProducts(offset, pageSize);
+        return productDAO.getProducts(page, pageSize);
     }
 }

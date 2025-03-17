@@ -14,6 +14,7 @@ public class User {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
+    // Constructor with 10 arguments
     public User(int userId, String username, String email, String password, String fullName, String address, String phoneNumber, String role, Timestamp createdAt, Timestamp updatedAt) {
         this.userId = userId;
         this.username = username;
@@ -27,10 +28,18 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public int getUserId() {
-        return userId;
+    // Constructor with 7 arguments
+    public User(String username, String email, String password, String fullName, String address, String phoneNumber, String role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 
+    // Getters
     public String getUsername() {
         return username;
     }
@@ -59,11 +68,6 @@ public class User {
         return role;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
+    // Other getters and setters
+    // ...
 }

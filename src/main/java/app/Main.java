@@ -4,6 +4,7 @@ import controller.UserController;
 import controller.AdminController;
 import service.UserService;
 import service.ProductService;
+import model.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,11 +28,38 @@ public class Main {
 
             // Application menu
             Scanner scanner = new Scanner(System.in);
+            User loggedInUser = null;
+
+            while (loggedInUser == null) {
+                System.out.println("Welcome to the Shopping App!");
+                System.out.println("1. Register");
+                System.out.println("2. Login");
+                System.out.println("3. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();  // Consume the newline character
+
+                switch (choice) {
+                    case 1:
+                        loggedInUser = userController.register(scanner);
+                        break;
+                    case 2:
+                        loggedInUser = userController.login(scanner);
+                        break;
+                    case 3:
+                        System.out.println("Exiting...");
+                        return;  // Exit the application
+                    default:
+                        System.out.println("Invalid option. Try again.");
+                        break;
+                }
+            }
+
             while (true) {
                 System.out.println("Welcome to the Shopping App!");
                 System.out.println("1. User Actions");
                 System.out.println("2. Admin Actions");
-                System.out.println("3. Exit");
+                System.out.println("3. Logout");
                 System.out.print("Choose an option: ");
                 int choice = scanner.nextInt();
                 scanner.nextLine();  // Consume the newline character
@@ -41,14 +69,23 @@ public class Main {
                         userController.handleUserActions(scanner);  // Call user actions
                         break;
                     case 2:
-                        adminController.handleAdminActions(scanner);  // Call admin actions
+                        if ("admin".equals(loggedInUser.getRole())) {
+                            adminController.handleAdminActions(scanner);  // Call admin actions
+                        } else {
+                            System.out.println("Access denied. Admins only.");
+                        }
                         break;
                     case 3:
-                        System.out.println("Exiting...");
-                        return;  // Exit the application
+                        System.out.println("Logging out...");
+                        loggedInUser = null;
+                        break;
                     default:
                         System.out.println("Invalid option. Try again.");
                         break;
+                }
+
+                if (loggedInUser == null) {
+                    break;
                 }
             }
         } catch (SQLException e) {

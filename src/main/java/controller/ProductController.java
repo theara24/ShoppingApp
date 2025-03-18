@@ -4,6 +4,7 @@ import model.Product;
 import service.ProductService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ProductController {
     private ProductService productService;
@@ -26,6 +27,15 @@ public class ProductController {
             return productService.getProductById(id);
         } catch (SQLException e) {
             System.err.println("Error fetching product: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Product> displayAllProducts() {
+        try {
+            return productService.getAllProducts();
+        } catch (SQLException e) {
+            System.err.println("Error fetching products: " + e.getMessage());
             return null;
         }
     }

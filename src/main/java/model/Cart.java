@@ -2,11 +2,10 @@ package model;
 
 public class Cart {
     private Long id;
-    private Long userId;    // References the User
-    private Long productId; // References the Product
+    private Long userId;
+    private Long productId;
     private int quantity;
-
-    public Cart() {}
+    private String productName; // New field
 
     public Cart(Long id, Long userId, Long productId, int quantity) {
         this.id = id;
@@ -23,4 +22,6 @@ public class Cart {
     public void setProductId(Long productId) { this.productId = productId; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
 }

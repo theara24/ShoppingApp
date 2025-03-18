@@ -1,36 +1,31 @@
 package service;
 
-import dao.OrderDAO;
 import dao.PaymentDAO;
-import model.Order;
 import model.Payment;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
 
 public class PaymentService {
-    private PaymentDAO paymentDAO;
-    private OrderDAO orderDAO;
+    private PaymentDAO paymentDAO = new PaymentDAO();
 
-    public PaymentService() {
-        this.paymentDAO = new PaymentDAO();
-        this.orderDAO = new OrderDAO();
-    }
-
-    public void processPayment(Long orderId, String paymentMethod) throws SQLException {
-        Order order = orderDAO.findById(orderId);
-        if (order == null) {
-            throw new SQLException("Order not found.");
-        }
-
-        Payment payment = new Payment(null, orderId, order.getTotalPrice(), paymentMethod, "PENDING");
+    public String processPayment(Long orderId, String paymentMethod) throws SQLException {
+        Payment payment = new Payment(null, orderId, 100.0, "PENDING", paymentMethod); // Example amount
         paymentDAO.save(payment);
-
-        // Simulate payment processing (in a real app, integrate with a payment gateway)
-        // For now, we’ll assume it succeeds and update the status
-        payment.setStatus("COMPLETED"); // This change is local; in a real app, update the DB
+        JSONObject json = new JSONObject();
+        json.put("orderId", orderId);
+        json.put("amount", 100.0);
+        json.put("status", "PENDING");
+        json.put("method", paymentMethod);
+        return "Scan QR code to pay: " + json.toString();
     }
 
-    public Payment getPaymentById(Long id) throws SQLException {
-        return paymentDAO.findById(id);
+    public void handleBakongCallback(String paymentId, String status) throws SQLException {
+        Long id = Long.parseLong(paymentId);
+        paymentDAO.updateStatus(id, status);
+    }
+
+    public Payment getPayment(Long orderId) throws SQLException {
+        return paymentDAO.findByOrderId(orderId); // Now this should resolve
     }
 }

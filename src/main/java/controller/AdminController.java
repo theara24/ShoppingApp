@@ -4,56 +4,62 @@ import model.Admin;
 import model.Order;
 import model.Product;
 import service.AdminService;
+import service.OrderService;
+import service.ProductService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class AdminController {
     private AdminService adminService;
+    private ProductService productService;
+    private OrderService orderService;
 
     public AdminController() {
         this.adminService = new AdminService();
+        this.productService = new ProductService();
+        this.orderService = new OrderService();
+    }
+
+    public Admin login(String username, String password) throws SQLException {
+        Admin admin = adminService.authenticateAdmin(username, password);
+        if (admin == null) {
+            throw new SQLException("Invalid username or password.");
+        }
+        return admin;
     }
 
     public String registerAdmin(Admin admin) {
         try {
             adminService.registerAdmin(admin);
-            return "Admin registered successfully!";
+            return "Admin registration successful! You can now log in.";
         } catch (SQLException e) {
-            return "Error registering admin: " + e.getMessage();
-        }
-    }
-
-    public Admin getAdmin(Long id) {
-        try {
-            return adminService.getAdminById(id);
-        } catch (SQLException e) {
-            System.err.println("Error fetching admin: " + e.getMessage());
-            return null;
+            return "Admin registration failed: " + e.getMessage();
         }
     }
 
     public String addProduct(Product product) {
         try {
-            adminService.addProduct(product);
-            return "Product added successfully by admin!";
+            productService.addProduct(product);
+            return "Product added successfully!";
         } catch (SQLException e) {
             return "Error adding product: " + e.getMessage();
         }
     }
 
-    public Order getOrder(Long orderId) {
+    public List<Order> viewAllOrders() {
         try {
-            return adminService.getOrderById(orderId);
+            return orderService.getAllOrders();
         } catch (SQLException e) {
-            System.err.println("Error fetching order: " + e.getMessage());
+            System.err.println("Error fetching all orders: " + e.getMessage());
             return null;
         }
     }
 
-    public String updateOrderStatus(Long orderId, String newStatus) {
+    public String updateOrderStatus(Long orderId, String status) {
         try {
-            adminService.updateOrderStatus(orderId, newStatus);
-            return "Order status updated to " + newStatus + " by admin successfully!";
+            orderService.updateOrderStatus(orderId, status);
+            return "Order status updated successfully!";
         } catch (SQLException e) {
             return "Error updating order status: " + e.getMessage();
         }

@@ -6,24 +6,19 @@ import service.PaymentService;
 import java.sql.SQLException;
 
 public class PaymentController {
-    private PaymentService paymentService;
-
-    public PaymentController() {
-        this.paymentService = new PaymentService();
-    }
+    private PaymentService paymentService = new PaymentService();
 
     public String processPayment(Long orderId, String paymentMethod) {
         try {
-            paymentService.processPayment(orderId, paymentMethod);
-            return "Payment processed successfully!";
+            return paymentService.processPayment(orderId, paymentMethod);
         } catch (SQLException e) {
             return "Error processing payment: " + e.getMessage();
         }
     }
 
-    public Payment getPayment(Long id) {
+    public Payment getPayment(Long orderId) {
         try {
-            return paymentService.getPaymentById(id);
+            return paymentService.getPayment(orderId);
         } catch (SQLException e) {
             System.err.println("Error fetching payment: " + e.getMessage());
             return null;

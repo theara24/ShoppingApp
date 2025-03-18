@@ -19,25 +19,14 @@ public class QRCodeService {
         this.paymentDAO = new PaymentDAO();
     }
 
-    public String generateQRCodeForPayment(Long paymentId) throws SQLException, WriterException, IOException {
+    public String generateQRCodeForPayment(Long paymentId, String paymentUrl) throws SQLException, WriterException, IOException {
         Payment payment = paymentDAO.findById(paymentId);
-        if (payment == null) {
-            throw new SQLException("Payment not found.");
-        }
-
-        // Create QR code content (e.g., payment details)
-        String qrContent = "Payment ID: " + payment.getId() +
-                ", Amount: $" + payment.getAmount() +
-                ", Method: " + payment.getPaymentMethod();
+        if (payment == null) throw new SQLException("Payment not found.");
+        String qrContent = paymentUrl != null ? paymentUrl : "Bakong Payment: Order ID " + payment.getOrderId() + ", Amount $" + payment.getAmount();
         String filePath = "src/main/resources/qrcodes/payment_" + paymentId + ".png";
-
-        // Generate QR code
         QRCodeGenerator.generateQRCode(qrContent, filePath);
-
-        // Save QR code metadata to database
         QRCode qrCode = new QRCode(null, paymentId, filePath);
         qrCodeDAO.save(qrCode);
-
         return filePath;
     }
 

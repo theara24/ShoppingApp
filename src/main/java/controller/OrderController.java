@@ -4,6 +4,7 @@ import model.Order;
 import service.OrderService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class OrderController {
     private OrderService orderService;
@@ -12,30 +13,40 @@ public class OrderController {
         this.orderService = new OrderService();
     }
 
-    public String placeOrder(Long userId, Long productId, int quantity) {
+    public String checkout(Long userId) {
         try {
-            orderService.placeOrder(userId, productId, quantity);
+            double total = orderService.calculateTotalAmount(userId);
+            if (total == 0.0) return "Cart is empty.";
+            return String.format("Total amount to pay: $%.2f", total);
+        } catch (SQLException e) {
+            return "Error during checkout: " + e.getMessage();
+        }
+    }
+
+    public String confirmCheckout(Long userId) {
+        try {
+            orderService.createOrderFromCart(userId);
             return "Order placed successfully!";
         } catch (SQLException e) {
             return "Error placing order: " + e.getMessage();
         }
     }
 
-    public Order getOrder(Long id) {
+    public List<Order> getUserOrders(Long userId) {
         try {
-            return orderService.getOrderById(id);
+            return orderService.getOrdersByUserId(userId);
         } catch (SQLException e) {
-            System.err.println("Error fetching order: " + e.getMessage());
+            System.err.println("Error fetching user orders: " + e.getMessage());
             return null;
         }
     }
 
-    public String updateOrderStatus(Long orderId, String newStatus) {
+    public String cancelOrder(Long orderId, Long userId) {
         try {
-            orderService.updateOrderStatus(orderId, newStatus);
-            return "Order status updated to " + newStatus + " successfully!";
+            orderService.cancelOrder(orderId, userId);
+            return "Order cancelled successfully!";
         } catch (SQLException e) {
-            return "Error updating order status: " + e.getMessage();
+            return "Error cancelling order: " + e.getMessage();
         }
     }
 }
